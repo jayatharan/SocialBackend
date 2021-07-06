@@ -1,17 +1,29 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const userSchema = new Schema({
+    name:String,
+    avatar:String
+})
+
 const postSchema = new Schema(
     {
+        user:userSchema,
         title:{
             type:String,
-            required:true
+        },
+        description:{
+            type:String,
         },
         userId:{
             type: Schema.Types.ObjectId, 
             ref: 'User'
         },
         avl:{
+            type:Boolean,
+            default:false
+        },
+        posted:{
             type:Boolean,
             default:false
         },

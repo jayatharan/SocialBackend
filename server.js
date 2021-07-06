@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const userRouter = require('./routers/userRouter')
+const postRouter = require('./routers/postRouter')
 const Choice = require('./models/choiceModel')
 
 //port
@@ -24,6 +25,7 @@ const updateChoices = ()=>{
 app.use(express.json())
 app.use(cors())
 app.use('/user',userRouter)
+app.use('/post',postRouter)
 
 app.get('/',(req,res)=>{
     res.send("Social Media for students backend")
