@@ -1,5 +1,5 @@
 const express = require('express')
-const { isAuth } = require('../utils.js')
+const { isAuth, getUserSpecificData } = require('../utils.js')
 const Post = require('../models/postModel')
 const User = require('../models/userModel')
 
@@ -16,7 +16,13 @@ postRouter.get('/my_posts',isAuth, async(req,res)=>{
 })
 
 postRouter.get('/',async(req,res)=>{
-    const posts = await Post.find({posted:true})
+    const datas = await getUserSpecificData(req)
+    var posts = null
+    if(datas.user){
+        posts = await Post.find({posted:true,showTo:{"$in":[datas.user._id]}})
+    }else{
+        posts = await Post.find({posted:true})
+    }
     res.send(posts)
 })
 

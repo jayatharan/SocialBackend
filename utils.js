@@ -44,5 +44,38 @@ const updatePostShowto = async(userId)=>{
   }})
 }
 
+const updateFriendOfUser = async(userId,friendId)=>{
+  const user = await User.findById(userId)
+  user.friends.push(friendId)
+  await user.save()
+}
 
-module.exports = { generateToken, isAuth, updatePostShowto }
+const getUserSpecificData = async(req)=>{
+  var userType = "All"
+  var medium = "All"
+  var grade = "All"
+  var user = null
+
+  const authorization = req.headers.authorization;
+  if (authorization) {
+    const token = authorization.slice(7, authorization.length);
+    await jwt.verify(
+      token,
+      'jwtsecret',
+      async(err, decode) => {
+        if (err) {
+          user = null
+        } else {
+          user = await User.findById(decode)
+          userType = user.userType
+          medium = user.medium
+          grade = user.grade
+        }
+      }
+    );
+  }
+  return {userType,medium,grade,user}
+}
+
+
+module.exports = { generateToken, isAuth, updatePostShowto, updateFriendOfUser, getUserSpecificData }

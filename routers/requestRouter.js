@@ -1,5 +1,5 @@
 const express = require('express')
-const { isAuth,updatePostShowto } = require('../utils.js')
+const { isAuth, updatePostShowto, updateFriendOfUser } = require('../utils.js')
 const FriendRequest = require('../models/friendRequestModel')
 const User = require('../models/userModel')
 
@@ -50,21 +50,20 @@ requestRouter.get('/:action/:r_id',isAuth,async(req,res)=>{
     const r_id = req.params['r_id']
     const u_id = req.user._id
     const request = await FriendRequest.findById(r_id)
-    const tUser = await User.findById(request.toUserId)
-    const frmUser = await User.findById(request.fromUserId)
+    
     if(request.toUserId == u_id){
         const authorization = req.headers.authorization;
         const token = authorization.slice(7, authorization.length)
 
         if(action == 'accept'){
-            tUser.friends.push(request.fromUserId)
-            frmUser.friends.push(request.toUserId)
-            await tUser.save()
-            await frmUser.save()
+            
+            await updateFriendOfUser(request.toUserId,request.fromUserId)
+            await updateFriendOfUser(request.fromUserId,request.toUserId)
             await updatePostShowto(request.fromUserId)
             await updatePostShowto(request.toUserId)
             await FriendRequest.findByIdAndDelete(r_id)
-        
+            const tUser = await User.findById(request.toUserId)
+
             res.send({"user":tUser, "token":token})
         }
         else if(action == 'cancel'){
