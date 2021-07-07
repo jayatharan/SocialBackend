@@ -1,3 +1,6 @@
+const User = require('./models/userModel')
+const Post = require('./models/postModel')
+
 const jwt = require('jsonwebtoken')
 
 const generateToken = (user) => {
@@ -34,5 +37,12 @@ const isAuth = (req,res,next) => {
   }
 }
 
+const updatePostShowto = async(userId)=>{
+  const user = await User.findById(userId)
+  await Post.updateMany({userId:userId},{'$set':{
+    showTo:user.friends
+  }})
+}
 
-module.exports = { generateToken, isAuth }
+
+module.exports = { generateToken, isAuth, updatePostShowto }

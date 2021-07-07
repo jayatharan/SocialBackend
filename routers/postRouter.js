@@ -31,7 +31,8 @@ postRouter.get('/create',isAuth, async(req,res)=>{
                 name:user.name,
                 avatar:user.avatar
             },
-            userId:req.user._id
+            userId:req.user._id,
+            showTo:user.friends
         })
         post.save().then((result)=>{
             res.send({"post_id":result._id})
@@ -45,6 +46,17 @@ postRouter.get('/:p_id',async(req,res)=>{
     res.send(post)
 })
 
+postRouter.get('/like/:p_id',isAuth,async(req,res)=>{
+    var post_id = req.params['p_id']
+    const post = await Post.findById(post_id)
+    var index = post.likes.indexOf(req.user._id);
+    if (index > -1) {
+        post.likes.splice(index, 1);
+    }
+    else post.likes.push(req.user._id)
+    await post.save()
+    res.send(post)
+})
 
 postRouter.post('/update/:p_id',isAuth, async(req,res)=>{
     var post_id = req.params['p_id']

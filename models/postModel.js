@@ -47,6 +47,10 @@ const postSchema = new Schema(
         showTo:[{
             type:Schema.Types.ObjectId,
             ref: 'User'
+        }],
+        likes:[{
+            type: Schema.Types.ObjectId, 
+            ref: 'User'
         }]
     },
     {

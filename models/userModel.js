@@ -40,8 +40,11 @@ const userSchema = new Schema(
         grade:{
             type:String
         },
-        contact:contactInfoSchema
-
+        contact:contactInfoSchema,
+        friends:[{
+            type: Schema.Types.ObjectId, 
+            ref: 'User'
+        }]
     },
     {
         timestamps:true

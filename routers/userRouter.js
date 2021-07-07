@@ -62,9 +62,18 @@ userRouter.post('/update',isAuth,async (req,res)=>{
 
     await user.save()
 
-    console.log(user)
 
     res.send({"user":user, "token":token})
+})
+
+userRouter.get('/my_friends',isAuth,async(req,res)=>{
+    const user = await User.findById(req.user._id)
+    const friends = await User.find({_id:{
+        $in:user.friends
+    }})
+    
+    res.send(friends)
+    
 })
 
 module.exports = userRouter
