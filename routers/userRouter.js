@@ -67,13 +67,13 @@ userRouter.post('/update',isAuth,async (req,res)=>{
 })
 
 userRouter.get('/my_friends',isAuth,async(req,res)=>{
+    
     const user = await User.findById(req.user._id)
-    const friends = await User.find({_id:{
-        $in:user.friends
+    const friends = await User.find({'_id':{
+        $in: user.friends
     }})
     
     res.send(friends)
-    
 })
 
 userRouter.get('/search',async(req,res)=>{
@@ -84,7 +84,7 @@ userRouter.get('/search',async(req,res)=>{
         var friends = datas.user.friends
         requestedIds = await getMyRequestedIds(datas.user._id)
         if(friends.length != 0){
-            people = await User.find({updated:true}).where('_id').ne(friends).limit(50)
+            people = await User.find({updated:true,_id:{$nin:friends}}).limit(50)
             people = people.filter((person) => person._id.toString() != datas.user._id.toString())
         }else{
             people = await User.find({updated:true})    
