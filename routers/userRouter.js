@@ -1,7 +1,7 @@
 const express = require('express')
 const { OAuth2Client } =require('google-auth-library')
 const User = require('../models/userModel')
-const { generateToken, isAuth, getUserSpecificData } = require('../utils.js')
+const { generateToken, isAuth, getUserSpecificData, getMyRequestedIds } = require('../utils.js')
 
 const userRouter = express.Router()
 
@@ -79,17 +79,21 @@ userRouter.get('/my_friends',isAuth,async(req,res)=>{
 userRouter.get('/search',async(req,res)=>{
     const datas = await getUserSpecificData(req)
     var people = null
+    var requestedIds =[]
     if(datas.user){
         var friends = datas.user.friends
+        requestedIds = await getMyRequestedIds(datas.user._id)
         if(friends.length != 0){
-            people = await User.find({updated:true,_id:{$ne:friends}})
+            people = await User.find({updated:true}).where('_id').ne(friends).limit(50)
+            people = people.filter((person) => person._id.toString() != datas.user._id.toString())
         }else{
             people = await User.find({updated:true})    
+            people = people.filter((person) => person._id.toString() != datas.user._id.toString())
         }
     }else{
         people = await User.find({updated:true})
     }
-    res.send({people})
+    res.send({people,requestedIds})
 })
 
 

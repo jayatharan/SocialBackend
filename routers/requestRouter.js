@@ -34,7 +34,21 @@ requestRouter.get('/send/:u_id',isAuth,async(req,res)=>{
     }
 
     await request.save()
+
     res.send(request)
+})
+
+requestRouter.get('/cancel/:u_id',isAuth,async(req,res)=>{
+    const u_id = req.params['u_id']
+    const request = await FriendRequest.findOne({fromUserId:req.user._id,toUserId:u_id})
+    if(request){
+        if(request.fromUserId == req.user._id){
+            await FriendRequest.findByIdAndDelete(request._id)
+            res.send(request._id)
+        }
+        res.send()
+    }
+    res.send()
 })
 
 requestRouter.get('/my_requests',isAuth,async(req,res)=>{
@@ -45,12 +59,15 @@ requestRouter.get('/my_requests',isAuth,async(req,res)=>{
     res.send(requests)
 })
 
+
+
 requestRouter.get('/:action/:r_id',isAuth,async(req,res)=>{
+    console.log("Test")
     const action = req.params['action']
     const r_id = req.params['r_id']
     const u_id = req.user._id
     const request = await FriendRequest.findById(r_id)
-    
+
     if(request.toUserId == u_id){
         const authorization = req.headers.authorization;
         const token = authorization.slice(7, authorization.length)
@@ -66,7 +83,7 @@ requestRouter.get('/:action/:r_id',isAuth,async(req,res)=>{
 
             res.send({"user":tUser, "token":token})
         }
-        else if(action == 'cancel'){
+        else if(action == 'reject'){
             await FriendRequest.findByIdAndDelete(r_id)
             res.send({"status":"success"})
         }    

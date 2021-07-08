@@ -1,5 +1,6 @@
 const User = require('./models/userModel')
 const Post = require('./models/postModel')
+const FriendRequest = require('./models/friendRequestModel')
 
 const jwt = require('jsonwebtoken')
 
@@ -77,5 +78,11 @@ const getUserSpecificData = async(req)=>{
   return {userType,medium,grade,user}
 }
 
+const getMyRequestedIds = async(userId)=>{
+  requests = await FriendRequest.find({fromUserId:userId}).select('toUserId')
+  toIds = []
+  requests.map((request)=> toIds.push(request.toUserId) )
+  return toIds
+}
 
-module.exports = { generateToken, isAuth, updatePostShowto, updateFriendOfUser, getUserSpecificData }
+module.exports = { generateToken, isAuth, updatePostShowto, updateFriendOfUser, getUserSpecificData, getMyRequestedIds }
