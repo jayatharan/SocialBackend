@@ -51,6 +51,17 @@ const updateFriendOfUser = async(userId,friendId)=>{
   await user.save()
 }
 
+const removeFriendOfUser = async(userId,friendId)=>{
+  var user = await User.findById(userId)
+  var friends = user.friends
+  const index = friends.findIndex(id => id.toString() === friendId)
+  if(index > -1){
+    friends.splice(index,1)
+    user.friends = friends
+    await user.save()
+  }
+}
+
 const getUserSpecificData = async(req)=>{
   var userType = "All"
   var medium = "All"
@@ -85,4 +96,4 @@ const getMyRequestedIds = async(userId)=>{
   return toIds
 }
 
-module.exports = { generateToken, isAuth, updatePostShowto, updateFriendOfUser, getUserSpecificData, getMyRequestedIds }
+module.exports = { generateToken, isAuth, updatePostShowto, updateFriendOfUser, getUserSpecificData, getMyRequestedIds, removeFriendOfUser }

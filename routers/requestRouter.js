@@ -64,13 +64,16 @@ requestRouter.get('/my_requests',isAuth,async(req,res)=>{
 
 
 requestRouter.get('/:action/:r_id',isAuth,async(req,res)=>{
-    console.log("Test")
     const action = req.params['action']
     const r_id = req.params['r_id']
     const u_id = req.user._id
     const request = await FriendRequest.findById(r_id)
 
-    if(request.toUserId == u_id){
+    if(!request){
+        res.status(401).send({ message: 'Request not found' })
+    }
+
+    else if(request.toUserId == u_id){
         const authorization = req.headers.authorization;
         const token = authorization.slice(7, authorization.length)
 
@@ -80,6 +83,7 @@ requestRouter.get('/:action/:r_id',isAuth,async(req,res)=>{
             await updateFriendOfUser(request.fromUserId,request.toUserId)
             await updatePostShowto(request.fromUserId)
             await updatePostShowto(request.toUserId)
+            await FriendRequest.findOneAndDelete({toUserId:request.fromUserId,fromUserId:request.toUserId})
             await FriendRequest.findByIdAndDelete(r_id)
             const tUser = await User.findById(request.toUserId)
 

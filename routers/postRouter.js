@@ -19,7 +19,7 @@ postRouter.get('/',async(req,res)=>{
     const datas = await getUserSpecificData(req)
     var posts = null
     if(datas.user){
-        posts = await Post.find({posted:true,showTo:{"$in":[datas.user._id]}}).sort('-updatedAt')
+        posts = await Post.find({$or:[{posted:true,showTo:{"$in":[datas.user._id]}},{posted:true,userId:datas.user._id}]}).sort('-updatedAt')
     }else{
         posts = await Post.find({posted:true})
     }

@@ -1,7 +1,7 @@
 const express = require('express')
 const { OAuth2Client } =require('google-auth-library')
 const User = require('../models/userModel')
-const { generateToken, isAuth, getUserSpecificData, getMyRequestedIds } = require('../utils.js')
+const { generateToken, isAuth, getUserSpecificData, getMyRequestedIds, removeFriendOfUser, updatePostShowto } = require('../utils.js')
 
 const userRouter = express.Router()
 
@@ -73,6 +73,21 @@ userRouter.get('/my_friends',isAuth,async(req,res)=>{
     }}).select('_id name avatar userType').sort('name')
     
     res.send(friends)
+})
+
+userRouter.get('/un_friend/:f_id',isAuth,async (req,res)=>{
+    const u_id = req.user._id
+    const f_id = req.params['f_id']
+    await removeFriendOfUser(u_id,f_id)
+    await removeFriendOfUser(f_id,u_id)
+    await updatePostShowto(u_id,f_id)
+    await updatePostShowto(f_id,u_id)
+    const authorization = req.headers.authorization;
+    const token = authorization.slice(7, authorization.length)
+
+    const user = await User.findById(u_id)
+
+    res.send({"user":user, "token":token})
 })
 
 userRouter.get('/search/:keyword',async(req,res)=>{
