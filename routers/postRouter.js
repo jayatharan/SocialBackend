@@ -47,13 +47,13 @@ postRouter.get('/create',isAuth, async(req,res)=>{
 })
 
 postRouter.get('/:p_id',async(req,res)=>{
-    var post_id = req.params['p_id']
+    const post_id = req.params['p_id']
     const post = await Post.findById(post_id)
     res.send(post)
 })
 
 postRouter.get('/like/:p_id',isAuth,async(req,res)=>{
-    var post_id = req.params['p_id']
+    const post_id = req.params['p_id']
     const post = await Post.findById(post_id)
     var index = post.likes.indexOf(req.user._id);
     if (index > -1) {
@@ -65,7 +65,7 @@ postRouter.get('/like/:p_id',isAuth,async(req,res)=>{
 })
 
 postRouter.post('/update/:p_id',isAuth, async(req,res)=>{
-    var post_id = req.params['p_id']
+    const post_id = req.params['p_id']
     const post = await Post.findById(post_id)
     // if(post.userId != req.user._id) res.send({"Error":"You are not the owner"})
     const data = req.body

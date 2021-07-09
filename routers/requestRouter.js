@@ -20,12 +20,14 @@ requestRouter.get('/send/:u_id',isAuth,async(req,res)=>{
             fromUserId:frmUser._id,
             fromUser:{
                 name:frmUser.name,
-                avatar:frmUser.avatar
+                avatar:frmUser.avatar,
+                userType:frmUser.userType
             },
             toUserId:tUser._id,
             toUser:{
                 name:tUser.name,
-                avatar:tUser.avatar
+                avatar:tUser.avatar,
+                userType:tUser.userType
             }
         })
     }

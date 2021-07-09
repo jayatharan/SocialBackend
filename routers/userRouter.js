@@ -62,7 +62,6 @@ userRouter.post('/update',isAuth,async (req,res)=>{
 
     await user.save()
 
-
     res.send({"user":user, "token":token})
 })
 
@@ -71,27 +70,33 @@ userRouter.get('/my_friends',isAuth,async(req,res)=>{
     const user = await User.findById(req.user._id)
     const friends = await User.find({'_id':{
         $in: user.friends
-    }})
+    }}).select('_id name avatar userType').sort('name')
     
     res.send(friends)
 })
 
-userRouter.get('/search',async(req,res)=>{
+userRouter.get('/search/:keyword',async(req,res)=>{
+    const keyword = req.params['keyword']
     const datas = await getUserSpecificData(req)
     var people = null
+    
     var requestedIds =[]
     if(datas.user){
         var friends = datas.user.friends
         requestedIds = await getMyRequestedIds(datas.user._id)
-        if(friends.length != 0){
-            people = await User.find({updated:true,_id:{$nin:friends}}).limit(50)
+        if(keyword === "none"){
+            people = await User.find({updated:true,_id:{$nin:[...friends,...requestedIds]}}).sort('-updatedAt').limit(50).select('_id name avatar userType')
             people = people.filter((person) => person._id.toString() != datas.user._id.toString())
         }else{
-            people = await User.find({updated:true})    
+            people = await User.find({ name: { $regex: keyword, $options: "i" }}).select('_id name avatar userType')
             people = people.filter((person) => person._id.toString() != datas.user._id.toString())
         }
     }else{
-        people = await User.find({updated:true})
+        if(keyword === "none"){
+            people = await User.find({updated:true}).select('_id name avatar userType').limit(50)
+        }else{
+            people = await User.find({ name: { $regex: keyword, $options: "i" }}).select('_id name avatar userType')
+        }
     }
     res.send({people,requestedIds})
 })
