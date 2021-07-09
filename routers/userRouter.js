@@ -7,6 +7,13 @@ const userRouter = express.Router()
 
 const client = new OAuth2Client("1024970411628-b4s6qus2bui9efecamg85p7e1t9unnsg.apps.googleusercontent.com")
 
+userRouter.get('/my_data',isAuth,async(req,res)=>{
+    const authorization = req.headers.authorization;
+    const token = authorization.slice(7, authorization.length)
+    const user = await User.findById(req.user._id)
+    
+    res.send({"user":user, "token":token})
+})
 
 userRouter.post('/login',(req,res)=>{
     const {tokenId} = req.body

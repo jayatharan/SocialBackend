@@ -6,6 +6,16 @@ const userSchema = new Schema({
     avatar:String
 })
 
+const commentSchema = new Schema({
+    userId:{
+            type: Schema.Types.ObjectId, 
+            ref: 'User'
+        },
+    name:String,
+    avatar:String,
+    content:String
+})
+
 const postSchema = new Schema(
     {
         user:userSchema,
@@ -51,7 +61,12 @@ const postSchema = new Schema(
         likes:[{
             type: Schema.Types.ObjectId, 
             ref: 'User'
-        }]
+        }],
+        comments:[commentSchema],
+        commentCount:{
+            type:Number,
+            default:0
+        }
     },
     {
         timestamps:true
