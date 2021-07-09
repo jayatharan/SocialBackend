@@ -4,6 +4,7 @@ const cors = require('cors')
 const userRouter = require('./routers/userRouter')
 const postRouter = require('./routers/postRouter')
 const requestRouter = require('./routers/requestRouter')
+const questionRouter = require('./routers/questionRouter')
 const Choice = require('./models/choiceModel')
 
 //port
@@ -28,6 +29,8 @@ app.use(cors())
 app.use('/user',userRouter)
 app.use('/post',postRouter)
 app.use('/request',requestRouter)
+app.use('/question',questionRouter)
+
 
 app.get('/',(req,res)=>{
     res.send("Social Media for students backend")

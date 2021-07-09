@@ -29,7 +29,7 @@ postRouter.get('/',async(req,res)=>{
 postRouter.get('/create',isAuth, async(req,res)=>{
     const posts = await Post.find({userId:req.user._id,posted:false})
     if(posts.length != 0){
-         res.send({"post_id":posts[0]._id})
+         res.send(posts[0])
     }else{
         const user = await User.findById(req.user._id)
         const post = new Post({
@@ -40,9 +40,9 @@ postRouter.get('/create',isAuth, async(req,res)=>{
             userId:req.user._id,
             showTo:user.friends
         })
-        post.save().then((result)=>{
-            res.send({"post_id":result._id})
-        })
+        const savedPost = await post.save()
+        res.send(savedPost)
+        
     }
 })
 
@@ -67,7 +67,7 @@ postRouter.get('/like/:p_id',isAuth,async(req,res)=>{
 postRouter.post('/update/:p_id',isAuth, async(req,res)=>{
     const post_id = req.params['p_id']
     const post = await Post.findById(post_id)
-    if(post.userId === req.user._id){
+    if(post.userId == req.user._id){
         const data = req.body
         post.title = data.title
         post.description = data.description
