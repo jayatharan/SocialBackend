@@ -12,6 +12,7 @@ const answerSchema = new Schema({
             ref: 'User'
     },
     user:userSchema,
+    answer:String,
     youtubeId:{
             type:String
     },

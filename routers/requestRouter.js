@@ -81,12 +81,16 @@ requestRouter.get('/:action/:r_id',isAuth,async(req,res)=>{
             
             await updateFriendOfUser(request.toUserId,request.fromUserId)
             await updateFriendOfUser(request.fromUserId,request.toUserId)
-            await updatePostShowto(request.fromUserId)
-            await updatePostShowto(request.toUserId)
-            await FriendRequest.findOneAndDelete({toUserId:request.fromUserId,fromUserId:request.toUserId})
+            
+            //no need to wait untill bellow process finish (Background Process)
+            updatePostShowto(request.fromUserId)
+            updatePostShowto(request.toUserId)
+            FriendRequest.findOneAndDelete({toUserId:request.fromUserId,fromUserId:request.toUserId})
+            //Finish
+            
             await FriendRequest.findByIdAndDelete(r_id)
             const tUser = await User.findById(request.toUserId)
-
+            
             res.send({"user":tUser, "token":token})
         }
         else if(action == 'reject'){

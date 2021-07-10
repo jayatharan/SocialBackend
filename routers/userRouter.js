@@ -86,9 +86,13 @@ userRouter.get('/un_friend/:f_id',isAuth,async (req,res)=>{
     const u_id = req.user._id
     const f_id = req.params['f_id']
     await removeFriendOfUser(u_id,f_id)
-    await removeFriendOfUser(f_id,u_id)
-    await updatePostShowto(u_id,f_id)
-    await updatePostShowto(f_id,u_id)
+
+    //no need to wait untill bellow process finish (Background Process)
+    removeFriendOfUser(f_id,u_id)
+    updatePostShowto(u_id,f_id)
+    updatePostShowto(f_id,u_id)
+    //finish
+
     const authorization = req.headers.authorization;
     const token = authorization.slice(7, authorization.length)
 

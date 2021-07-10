@@ -29,4 +29,41 @@ questionRouter.get('/create',isAuth,async(req,res)=>{
     }
 })
 
+questionRouter.post('/update/:q_id',isAuth,async(req,res)=>{
+    const q_id = req.params['q_id']
+    var question = await Question.findById(q_id)
+    const user = await User.findById(req.user._id)
+    if(question){
+        if(question.userId == req.user._id){
+            const data = req.body
+            question.question = data.question
+        }
+        await question.save()
+        res.send({"status":"success"})
+    }
+    res.send({"status":"failed"})
+})
+
+questionRouter.post('/answer/:q_id',isAuth,async(req,res)=>{
+    const q_id = req.params['q_id']
+    const data = req.body
+    const user = await User.findById(req.user._id)
+    var question = await Question.findById(q_id)
+    var answer = {
+        userId:user._id,
+        user:{
+            name:user.name,
+            avatar:user.avatar
+        },
+        answer:data.answer,
+        youtubeId:data.youtubeId,
+        files:[],
+        description:data.description,
+        postId:data.postId
+    }
+    question.answers.push(answer)
+    question.save()
+    res.send()
+})
+
 module.exports = questionRouter
