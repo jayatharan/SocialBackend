@@ -11,6 +11,12 @@ questionRouter.get('/', async(req,res)=>{
     res.send(questions)
 })
 
+questionRouter.get('/:q_id',async(req,res)=>{
+    const q_id = req.params['q_id']
+    const question = await Question.findById(q_id).select('user title question userId medium grade subject')
+    res.send(question)
+})
+
 questionRouter.get('/create',isAuth,async(req,res)=>{
     const questions = await Question.find({userId:req.user._id,asked:false})
     if(questions.length != 0){
@@ -23,6 +29,8 @@ questionRouter.get('/create',isAuth,async(req,res)=>{
                 avatar:user.avatar
             },
             userId:req.user._id,
+            grade:user.grade,
+            medium:user.medium
         })
         const savedQuestion = await question.save()
         res.send(savedQuestion)
@@ -37,9 +45,12 @@ questionRouter.post('/update/:q_id',isAuth,async(req,res)=>{
         if(question.userId == req.user._id){
             const data = req.body
             question.question = data.question
+            question.title = data.title
+            question.medium = data.medium
+            question.grade = data.grade
         }
         await question.save()
-        res.send({"status":"success"})
+        res.send(question)
     }
     res.send({"status":"failed"})
 })

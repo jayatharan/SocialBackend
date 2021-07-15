@@ -38,8 +38,13 @@ const answerSchema = new Schema({
 const questionSchema = new Schema(
     {
         user:userSchema,
+        title:{
+            type:String,
+            default:""
+        },
         question:{
             type:String,
+            default:""
         },
         userId:{
             type: Schema.Types.ObjectId, 
@@ -57,6 +62,19 @@ const questionSchema = new Schema(
         asked:{
             type:Boolean,
             default:false
+        },
+        vote:[{
+            type: Schema.Types.ObjectId, 
+            ref: 'User'
+        }],
+        medium:{
+            type:String,
+        },
+        grade:{
+            type:String
+        },
+        subject:{
+            type:String
         }
     },
     {
